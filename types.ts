@@ -14,9 +14,26 @@ export interface TemporalLog {
   stability: number;
 }
 
+export interface QuantumMetrics {
+  entanglementLevel: number;
+  coherenceTime: number;
+  gateOps: number;
+  noiseLevel: number;
+}
+
+export type HealthStatus = 'OPTIMAL' | 'WARNING' | 'CRITICAL';
+
+export interface SystemHealth {
+  quantumCore: HealthStatus;
+  temporalStabilizer: HealthStatus;
+  dataLink: HealthStatus;
+}
+
 export enum ControlView {
   DASHBOARD = 'DASHBOARD',
   TEMPORAL_LEAP = 'TEMPORAL_LEAP',
   QUBIT_LAB = 'QUBIT_LAB',
-  STEERING = 'STEERING'
+  STEERING = 'STEERING',
+  VOICE_COMMAND = 'VOICE_COMMAND',
+  GOVERNANCE = 'GOVERNANCE'
 }

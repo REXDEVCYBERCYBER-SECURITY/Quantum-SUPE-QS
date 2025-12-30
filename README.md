@@ -1,6 +1,4 @@
-# Quantum-SUPE-QS
-
-# Quantum-Super Control System (QS_CTRL)
+# Quantum-Superscript Control System (QS_CTRL)
 
 A cutting-edge, cinematic dashboard designed for the simulation and management of quantum computing operations and temporal navigation ("Quantum Leap" scenarios). This application blends technical telemetry with narrative-driven AI to create an immersive "Command Center" experience.
 
