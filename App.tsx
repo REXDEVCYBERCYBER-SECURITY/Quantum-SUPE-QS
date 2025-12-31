@@ -45,17 +45,6 @@ import { ControlView, QubitState, TemporalLog, QuantumMetrics, HealthStatus } fr
 import { QuantumVisualizer } from './components/QuantumVisualizer';
 import { generateTemporalLog } from './services/geminiService';
 
-
-
-const App: React.FC = () => {
-  const [view, setView] = useState<ControlView>(ControlView.DASHBOARD);
-  const [qubits, setQubits] = useState<QubitState[]>([]);
-  const [logs, setLogs] = useState<TemporalLog[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [targetDate, setTargetDate] = useState('1989-03-26');
-  const [steeringValue, setSteeringValue] = useState(50);
-  const [analysis, setAnalysis] = useState<{ divergenceRisk: number; reasoning: string; recommendedAction: string } | null>(null);
-
 // Credentials mimic the requested PHP config.php behavior
 const AUTH_CONFIG = {
   username: "ROOT_ADMIN_MARIO",
@@ -720,5 +709,4 @@ const App: React.FC = () => {
     </div>
   );
 };
-
 export default App;
