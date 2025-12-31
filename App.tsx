@@ -1,16 +1,60 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Activity, Cpu, Zap, Compass, Server, Orbit, Mic, MicOff, ChevronUp, RefreshCw, 
-  ShieldCheck, Waves, ZapOff, BarChart3, BellRing, Scale, Atom, Layers, 
-  Fingerprint, Lock, Globe, Heart, Users, CheckCircle2, LayoutDashboard, Database,
-  Binary, Terminal, AlertCircle, Share2, Eye, Key, UserCheck, Shield, LogOut, Zap as ZapIcon,
-  HelpCircle, MoreHorizontal
-} from 'lucide-react';
+  Activity,
+  Cpu, Zap, 
+  Compass,
+  Server,
+  Orbit, 
+  Mic, 
+  MicOff,
+  ChevronUp,
+  RefreshCw, 
+  ShieldCheck,
+  Waves,
+  ZapOff,
+  BarChart3,
+  BellRing,
+  Scale, 
+  Atom,
+  Layers, 
+  Fingerprint, 
+  Lock,
+  Globe, 
+  Heart,
+  Users,
+  CheckCircle2, 
+  LayoutDashboard,
+  Database,
+  Binary,
+  Terminal, 
+  AlertCircle, 
+  Share2, 
+  Eye, 
+  Key, 
+  UserCheck,
+  Shield,
+  LogOut,
+  Zap as ZapIcon,
+  HelpCircle, 
+  MoreHorizontal
+} 
+  from 'lucide-react';
 import { GoogleGenAI, Modality } from '@google/genai';
 import { ControlView, QubitState, TemporalLog, QuantumMetrics, HealthStatus } from './types';
 import { QuantumVisualizer } from './components/QuantumVisualizer';
 import { generateTemporalLog } from './services/geminiService';
+
+
+
+const App: React.FC = () => {
+  const [view, setView] = useState<ControlView>(ControlView.DASHBOARD);
+  const [qubits, setQubits] = useState<QubitState[]>([]);
+  const [logs, setLogs] = useState<TemporalLog[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [targetDate, setTargetDate] = useState('1989-03-26');
+  const [steeringValue, setSteeringValue] = useState(50);
+  const [analysis, setAnalysis] = useState<{ divergenceRisk: number; reasoning: string; recommendedAction: string } | null>(null);
 
 // Credentials mimic the requested PHP config.php behavior
 const AUTH_CONFIG = {
