@@ -18,8 +18,9 @@ export const generateTemporalLog = async (targetDate: string, currentStatus: str
 
 export const analyzeQuantumStability = async (qubitData: any) => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Using gemini-3-pro-preview for complex reasoning task (STEM/Quantum analysis)
   const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-3-pro-preview',
     contents: `Analyze these quantum states: ${JSON.stringify(qubitData)}. Predict the probability of timeline divergence in a "Quantum Leap" scenario. Return a JSON object.`,
     config: {
       responseMimeType: "application/json",
@@ -34,7 +35,7 @@ export const analyzeQuantumStability = async (qubitData: any) => {
       }
     }
   });
-  return JSON.parse(response.text);
+  return response.text ? JSON.parse(response.text) : null;
 };
 
 export const generateHealthSummary = async (metrics: any, health: any) => {

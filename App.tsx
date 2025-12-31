@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Activity, 
@@ -7,7 +6,7 @@ import {
   Terminal, 
   Settings, 
   Clock, 
-  Compass,
+  Compass, 
   Gauge,
   AlertTriangle,
   X,
@@ -37,7 +36,17 @@ import {
   BarChart3,
   BellRing,
   ScrollText,
-  Scale
+  Scale,
+  Atom,
+  Binary,
+  Layers,
+  Fingerprint,
+  Lock,
+  Eye,
+  Workflow,
+  Globe,
+  Heart,
+  Users
 } from 'lucide-react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 import { ControlView, QubitState, TemporalLog, QuantumMetrics, SystemHealth, HealthStatus } from './types';
@@ -48,7 +57,6 @@ const NOISE_THRESHOLD = 0.12;
 const INPUT_SAMPLE_RATE = 16000;
 const OUTPUT_SAMPLE_RATE = 24000;
 
-// Helper functions for manual audio encoding and decoding as per guidelines
 function encode(bytes: Uint8Array) {
   let binary = '';
   const len = bytes.byteLength;
@@ -99,11 +107,10 @@ const App: React.FC = () => {
   const [leapEffect, setLeapEffect] = useState(false);
   const [expandedHealth, setExpandedHealth] = useState<string | null>(null);
   const [systemEvents, setSystemEvents] = useState<{id: string, text: string, type: 'info' | 'warning' | 'error', time: string}[]>([]);
-  const [computeSpeed, setComputeSpeed] = useState(1.4); // Exa-ops
+  const [computeSpeed, setComputeSpeed] = useState(1.4);
   const [isMuted, setIsMuted] = useState(false);
   const [activeToasts, setActiveToasts] = useState<{id: string, title: string, status: HealthStatus}[]>([]);
   
-  // Voice Control State
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState<'IDLE' | 'CONNECTING' | 'ACTIVE'>('IDLE');
   const sessionRef = useRef<any>(null);
@@ -133,7 +140,6 @@ const App: React.FC = () => {
     return { quantumCore: core, temporalStabilizer: stabilizer, dataLink: link };
   }, [metrics, steeringValue]);
 
-  // Track previous health for audio notification logic
   const prevHealthRef = useRef<SystemHealth>(systemHealth);
 
   const playNotificationSound = (severity: 'WARNING' | 'CRITICAL') => {
@@ -291,7 +297,7 @@ const App: React.FC = () => {
     const sessionPromise = ai.live.connect({
       model: 'gemini-2.5-flash-native-audio-preview-09-2025',
       config: {
-        responseModalalities: [Modality.AUDIO],
+        responseModalities: [Modality.AUDIO],
         speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } } },
         systemInstruction: "You are Ziggy, the AI assistant for the Quantum-Superscript Control System. You provide status on quantum power steering, qubit stability, and temporal leap logistics.",
       },
@@ -448,7 +454,7 @@ const App: React.FC = () => {
           { id: ControlView.QUBIT_LAB, icon: Cpu, label: 'Qubit Lab' },
           { id: ControlView.STEERING, icon: Navigation, label: 'Power Steering' },
           { id: ControlView.VOICE_COMMAND, icon: Radio, label: 'Ziggy Link' },
-          { id: ControlView.GOVERNANCE, icon: Scale, label: 'Protocol Mandate' },
+          { id: ControlView.GOVERNANCE, icon: Scale, label: 'System Info & Mandate' },
         ].map((item) => (
           <button
             key={item.id}
@@ -484,21 +490,6 @@ const App: React.FC = () => {
           {renderHealthIndicator('quantumCore', 'Quantum Core', systemHealth.quantumCore, Cpu, [{ label: 'Temp', value: '0.012 K', percent: 98, color: 'bg-emerald-500', icon: Thermometer }])}
           {renderHealthIndicator('temporalStabilizer', 'Leap Manifold', systemHealth.temporalStabilizer, Orbit, [{ label: 'Rigidity', value: `${steeringValue}%`, percent: steeringValue, color: 'bg-sky-500', icon: Gauge }])}
         </div>
-        
-        <div className="mt-4 px-2 border-t border-slate-800 pt-3">
-           <div className="text-[9px] text-slate-500 font-black uppercase mb-2 flex items-center gap-1.5"><History size={10} /> Chronicle Ticker</div>
-           <div className="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar">
-             {systemEvents.map(event => (
-               <div key={event.id} className="flex gap-2 items-start py-0.5 border-l border-slate-800 pl-2">
-                  <div className={`mt-1 w-1 h-1 rounded-full shrink-0 ${event.type === 'error' ? 'bg-red-500' : 'bg-sky-500'}`} />
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[8px] leading-tight text-slate-400 break-words">{event.text}</span>
-                    <span className="text-[6px] text-slate-700 mono">{event.time}</span>
-                  </div>
-               </div>
-             ))}
-           </div>
-        </div>
       </div>
 
       <div className="mt-auto p-4 glass-panel rounded-2xl border-sky-900/40 bg-sky-950/10 flex flex-col gap-2">
@@ -511,59 +502,200 @@ const App: React.FC = () => {
             {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
           </button>
         </div>
-        <div className="h-0.5 bg-slate-900 rounded-full overflow-hidden">
-          <div className={`h-full ${isMuted ? 'bg-slate-700' : 'bg-sky-400'} w-full transition-all`} />
-        </div>
       </div>
     </div>
   );
 
   const renderGovernanceView = () => (
-    <div className="p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700">
-      <header className="flex items-center gap-4 mb-10 border-b border-sky-500/20 pb-6">
-        <div className="p-3 bg-indigo-500/20 rounded-2xl text-indigo-400 border border-indigo-500/30">
-          <Scale size={32} />
+    <div className="p-8 max-w-7xl mx-auto space-y-16 animate-in fade-in duration-700">
+      {/* 1. คุณสมบัติของระบบควบคุม (System Properties) Section - MOVED TO TOP */}
+      <section className="space-y-12">
+        <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-sky-500/20 pb-8 gap-4">
+          <div>
+            <h1 className="text-6xl font-black text-slate-100 uppercase tracking-tighter italic mb-2">คุณสมบัติของระบบควบคุม</h1>
+            <p className="text-sky-500 text-sm font-black uppercase tracking-[0.4em] flex items-center gap-3">
+              <Layers size={16} /> Quantum-Superscript Architecture & AI Governance
+            </p>
+          </div>
+          <div className="glass-panel px-6 py-3 rounded-2xl border-sky-500/30 bg-sky-500/5 flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-[9px] text-slate-500 uppercase font-black tracking-widest">Model Vers.</div>
+              <div className="text-sm font-black text-sky-400 mono">G-2.5-FLASH</div>
+            </div>
+            <div className="h-8 w-px bg-sky-500/20" />
+            <div className="text-center">
+              <div className="text-[9px] text-slate-500 uppercase font-black tracking-widest">Security State</div>
+              <div className="text-sm font-black text-emerald-400 mono">HARDENED</div>
+            </div>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                title: "Quantum-Superscript Engine",
+                titleTh: "ระบบประมวลผลควอนตัมประสิทธิภาพสูง",
+                icon: Atom,
+                desc: "The heart of the QS_CTRL system, utilizing super-positional registers to process timeline data with 99.9% accuracy.",
+                descTh: "หัวใจหลักของระบบ QS_CTRL ที่ใช้รีจิสเตอร์แบบซูเปอร์โพซิชันเพื่อประมวลผลข้อมูลไทม์ไลน์ด้วยความแม่นยำ 99.9%",
+                metrics: ["1.4 Exa-Ops/s", "8-Qubit Register", "Decoherence Mitigation"]
+              },
+              {
+                title: "World Impact & Ethics",
+                titleTh: "จริยธรรมและการส่งเสริมพฤติกรรมเชิงบวก",
+                icon: Globe,
+                desc: "Promoting the behavior you want to see in the world. A project's atmosphere is the true engine of sustainable growth.",
+                descTh: "ส่งเสริมพฤติกรรมที่คุณอยากเห็นในโลก การสร้างบรรยากาศที่เป็นมิตรคือเครื่องยนต์ที่แท้จริงของการเติบโตที่ยั่งยืน",
+                metrics: ["Community Focus", "Welcoming Sync", "Zero-Toxicity"]
+              },
+              {
+                title: "Temporal Manifold Steering",
+                titleTh: "ระบบพวงมาลัยพาวเวอร์มิติเวลา",
+                icon: Navigation,
+                desc: "Precision vector stabilization for coordinate entry. Allows the navigator to 'steer' through temporal turbulence.",
+                descTh: "ระบบรักษาเสถียรภาพเวกเตอร์ความแม่นยำสูงสำหรับการระบุพิกัด ช่วยให้นักเดินทางสามารถ 'ขับเคลื่อน' ผ่านความผันผวนของมิติเวลาได้",
+                metrics: ["Active Torque", "Haptic Manifold", "Vector Locking"]
+              },
+              {
+                title: "AI Security & Governance",
+                titleTh: "ความปลอดภัยและการกำกับดูแล AI",
+                icon: ShieldCheck,
+                desc: "Advanced neural safeguards based on the 2025 AI Governance Framework. Protects against model poisoning and timeline drift.",
+                descTh: "ระบบป้องกันประสาทขั้นสูงตามกรอบการกำกับดูแล AI ปี 2025 ป้องกันการวางยาโมเดลและความคลาดเคลื่อนของไทม์ไลน์",
+                metrics: ["Prompt Shielding", "Leakage Prev.", "Audit Trail"]
+              }
+            ].map((feature, idx) => (
+              <div key={idx} className="glass-panel p-8 rounded-[2.5rem] border-sky-500/10 hover:bg-sky-500/5 transition-all group overflow-hidden relative border-t-4 border-t-sky-500/30">
+                <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <feature.icon size={120} className="text-sky-400" />
+                </div>
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="p-3 bg-sky-500/20 rounded-2xl text-sky-400">
+                    <feature.icon size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-slate-100 uppercase tracking-tighter">{feature.title}</h3>
+                    <p className="text-sky-500 text-xs font-bold uppercase tracking-widest">{feature.titleTh}</p>
+                  </div>
+                </div>
+                <p className="text-slate-300 text-sm leading-relaxed mb-4 italic">"{feature.desc}"</p>
+                <p className="text-slate-400 text-xs leading-relaxed mb-6 font-medium">{feature.descTh}</p>
+                <div className="flex flex-wrap gap-2">
+                  {feature.metrics.map((m, i) => (
+                    <span key={i} className="px-3 py-1 bg-slate-900/60 rounded-full text-[9px] mono text-sky-300 border border-sky-500/10 font-bold uppercase tracking-widest">{m}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-6">
+            <div className="glass-panel rounded-[2.5rem] p-10 border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-transparent relative overflow-hidden">
+              <div className="absolute -right-4 -top-4 opacity-10">
+                <Fingerprint size={120} className="text-indigo-400" />
+              </div>
+              <h3 className="text-2xl font-black text-indigo-400 mb-6 uppercase tracking-tighter flex items-center gap-3">
+                <Lock size={24} /> Technical Specs
+              </h3>
+              <div className="space-y-4">
+                {[
+                  { label: "Core Topology", value: "Fractal Q-Bit", icon: Cpu },
+                  { label: "Cohesion factor", value: "99.2% Hub", icon: Users },
+                  { label: "AI Governance", value: "ISO-2025-AI", icon: ShieldCheck },
+                  { label: "World Sync", value: "Enabled", icon: Globe },
+                  { label: "Sync Latency", value: "< 5ms PCM", icon: Zap }
+                ].map((spec, i) => (
+                  <div key={i} className="flex items-center justify-between py-3 border-b border-indigo-500/10 last:border-0">
+                    <div className="flex items-center gap-3">
+                      <spec.icon size={14} className="text-slate-600" />
+                      <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{spec.label}</span>
+                    </div>
+                    <span className="text-xs font-black text-slate-100 mono">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass-panel rounded-[2.5rem] p-8 border-emerald-500/10">
+              <h4 className="text-[10px] text-emerald-400 font-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                 <ShieldAlert size={14} /> Ethical Manifold Advisory
+              </h4>
+              <div className="bg-slate-900/60 p-5 rounded-2xl border border-white/5 space-y-4">
+                 <p className="text-[11px] text-slate-400 leading-relaxed italic">
+                   "Promote the behavior you want to see in the world." 🌎
+                 </p>
+                 <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,1)]" />
+                    <span className="text-[9px] font-black text-emerald-600 uppercase mono">Atmosphere Optimized</span>
+                 </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <h1 className="text-4xl font-black text-slate-100 uppercase tracking-tighter italic">Protocol Mandate</h1>
-          <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">Administrator Code of Conduct & Responsibilities</p>
+      </section>
+
+      {/* 2. Protocol Mandate Section */}
+      <section className="space-y-10 max-w-4xl mx-auto">
+        <header className="flex items-center gap-4 mb-10 border-b border-sky-500/20 pb-6">
+          <div className="p-3 bg-indigo-500/20 rounded-2xl text-indigo-400 border border-indigo-500/30">
+            <Scale size={32} />
+          </div>
+          <div>
+            <h1 className="text-4xl font-black text-slate-100 uppercase tracking-tighter italic">Protocol Mandate</h1>
+            <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">Administrator Code of Conduct & Responsibilities</p>
+          </div>
+        </header>
+
+        <section className="glass-panel p-10 rounded-[2.5rem] border-emerald-500/20 bg-emerald-500/5 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+            <Globe size={120} className="text-emerald-400" />
+          </div>
+          <div className="relative z-10 space-y-6">
+             <h2 className="text-2xl font-black text-emerald-400 uppercase tracking-tighter flex items-center gap-3">
+               <Heart size={24} className="animate-pulse" /> ส่งเสริมพฤติกรรมที่คุณอยากเห็นในโลก 🌎
+             </h2>
+             <blockquote className="text-lg text-slate-100 leading-relaxed font-serif italic border-l-4 border-emerald-500 pl-6 py-2">
+               "เมื่อโครงการดูเหมือนจะมีบรรยากาศที่ไม่เป็นมิตรหรือไม่ให้การต้อนรับ แม้ว่าจะเป็นเพียงคนๆ เดียวที่มีพฤติกรรมที่คนอื่นๆ ยอมรับได้ คุณก็เสี่ยงที่จะสูญเสียผู้ร่วมงานอีกมากมาย ซึ่งบางคนคุณอาจไม่เคยได้พบด้วยซ้ำ การนำหลักปฏิบัติมาใช้หรือบังคับใช้ไม่ใช่เรื่องง่ายเสมอไป แต่การส่งเสริมสภาพแวดล้อมที่เป็นมิตรจะช่วยให้ชุมชนของคุณเติบโตได้"
+             </blockquote>
+          </div>
+        </section>
+
+        <div className="glass-panel p-10 rounded-[2.5rem] border-indigo-500/10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+            <ShieldCheck size={120} className="text-indigo-400" />
+          </div>
+          
+          <article className="space-y-8 text-slate-300 leading-relaxed font-medium relative z-10">
+            <section className="space-y-4">
+              <h2 className="text-xl font-black text-indigo-400 uppercase tracking-tight flex items-center gap-2">
+                <ScrollText size={18} /> หน้าที่ความรับผิดชอบของคุณในฐานะผู้ดูแลระบบ
+              </h2>
+              <p className="bg-slate-900/40 p-6 rounded-2xl border border-white/5 italic">
+                ระเบียบปฏิบัติไม่ใช่กฎหมายที่บังคับใช้ตามอำเภอใจ คุณคือผู้บังคับใช้ระเบียบปฏิบัติ และเป็นความรับผิดชอบของคุณที่จะต้องปฏิบัติตามกฎที่ระเบียบปฏิบัติกำหนดไว้
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <p>
+                ในฐานะผู้ดูแล คุณมีหน้าที่กำหนดแนวทางสำหรับชุมชนของคุณและบังคับใช้แนวทางเหล่านั้นตามกฎที่กำหนดไว้ในจรรยาบรรณของคุณ ซึ่งหมายความว่าคุณต้องพิจารณารายงานการละเมิดจรรยาบรรณอย่างจริงจัง ผู้รายงานมีสิทธิ์ได้รับการตรวจสอบข้อร้องเรียนอย่างละเอียดและเป็นธรรม หากคุณพิจารณาแล้วว่าพฤติกรรมที่พวกเขารายงานนั้นไม่ใช่การละเมิด ให้แจ้งให้พวกเขาทราบอย่างชัดเจนและอธิบายว่าทำไมคุณถึงไม่ดำเนินการใดๆ หลังจากนั้นพวกเขาต้องตัดสินใจเองว่าจะยอมรับพฤติกรรมที่พวกเขามีปัญหา หรือเลิกเข้าร่วมในชุมชน
+              </p>
+            </section>
+
+            <section className="space-y-4 border-l-4 border-indigo-500/30 pl-6 py-2">
+              <p>
+                รายงานเกี่ยวกับพฤติกรรมที่ไม่ได้ <strong>ละเมิดระเบียบปฏิบัติ</strong> อย่างชัดเจนอาจบ่งชี้ว่ามีปัญหาเกิดขึ้นในชุมชนของคุณ และคุณควรตรวจสอบปัญหาที่อาจเกิดขึ้นนี้และดำเนินการตามความเหมาะสม ซึ่งอาจรวมถึงการแก้ไขระเบียบปฏิบัติเพื่อให้พฤติกรรมที่ยอมรับได้ชัดเจนยิ่งขึ้น และ/หรือพูดคุยกับบุคคลที่ถูกรายงานพฤติกรรม และบอกพวกเขาว่าถึงแม้พวกเขาจะไม่ได้ละเมิดระเบียบปฏิบัติ แต่พวกเขากำลังทำในสิ่งที่ใกล้เคียงกับสิ่งที่คาดหวัง และทำให้ผู้เข้าร่วมบางคนรู้สึกไม่สบายใจ
+              </p>
+            </section>
+
+            <section className="pt-6 border-t border-slate-800">
+              <p className="font-bold text-slate-100">
+                ในท้ายที่สุด ในฐานะผู้ดูแลระบบ คุณเป็นผู้กำหนดและบังคับใช้มาตรฐานพฤติกรรมที่ยอมรับได้ คุณมีอำนาจในการกำหนดค่านิยมของชุมชนในโครงการ และผู้เข้าร่วมคาดหวังว่าคุณจะบังคับใช้ค่านิยมเหล่านั้นอย่างยุติธรรมและเป็นกลาง
+              </p>
+            </section>
+          </article>
         </div>
-      </header>
-
-      <div className="glass-panel p-10 rounded-[2.5rem] border-indigo-500/10 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-          <ShieldCheck size={120} className="text-indigo-400" />
-        </div>
-        
-        <article className="space-y-8 text-slate-300 leading-relaxed font-medium relative z-10">
-          <section className="space-y-4">
-            <h2 className="text-xl font-black text-indigo-400 uppercase tracking-tight flex items-center gap-2">
-              <ScrollText size={18} /> หน้าที่ความรับผิดชอบของคุณในฐานะผู้ดูแลระบบ
-            </h2>
-            <p className="bg-slate-900/40 p-6 rounded-2xl border border-white/5 italic">
-              ระเบียบปฏิบัติไม่ใช่กฎหมายที่บังคับใช้ตามอำเภอใจ คุณคือผู้บังคับใช้ระเบียบปฏิบัติ และเป็นความรับผิดชอบของคุณที่จะต้องปฏิบัติตามกฎที่ระเบียบปฏิบัติกำหนดไว้
-            </p>
-          </section>
-
-          <section className="space-y-4">
-            <p>
-              ในฐานะผู้ดูแล คุณมีหน้าที่กำหนดแนวทางสำหรับชุมชนของคุณและบังคับใช้แนวทางเหล่านั้นตามกฎที่กำหนดไว้ในจรรยาบรรณของคุณ ซึ่งหมายความว่าคุณต้องพิจารณารายงานการละเมิดจรรยาบรรณอย่างจริงจัง ผู้รายงานมีสิทธิ์ได้รับการตรวจสอบข้อร้องเรียนอย่างละเอียดและเป็นธรรม หากคุณพิจารณาแล้วว่าพฤติกรรมที่พวกเขารายงานนั้นไม่ใช่การละเมิด ให้แจ้งให้พวกเขาทราบอย่างชัดเจนและอธิบายว่าทำไมคุณถึงไม่ดำเนินการใดๆ หลังจากนั้นพวกเขาต้องตัดสินใจเองว่าจะยอมรับพฤติกรรมที่พวกเขามีปัญหา หรือเลิกเข้าร่วมในชุมชน
-            </p>
-          </section>
-
-          <section className="space-y-4 border-l-4 border-indigo-500/30 pl-6 py-2">
-            <p>
-              รายงานเกี่ยวกับพฤติกรรมที่ไม่ได้ <strong>ละเมิดระเบียบปฏิบัติ</strong> อย่างชัดเจนอาจบ่งชี้ว่ามีปัญหาเกิดขึ้นในชุมชนของคุณ และคุณควรตรวจสอบปัญหาที่อาจเกิดขึ้นนี้และดำเนินการตามความเหมาะสม ซึ่งอาจรวมถึงการแก้ไขระเบียบปฏิบัติเพื่อให้พฤติกรรมที่ยอมรับได้ชัดเจนยิ่งขึ้น และ/หรือพูดคุยกับบุคคลที่ถูกรายงานพฤติกรรม และบอกพวกเขาว่าถึงแม้พวกเขาจะไม่ได้ละเมิดระเบียบปฏิบัติ แต่พวกเขากำลังทำในสิ่งที่ใกล้เคียงกับสิ่งที่คาดหวัง และทำให้ผู้เข้าร่วมบางคนรู้สึกไม่สบายใจ
-            </p>
-          </section>
-
-          <section className="pt-6 border-t border-slate-800">
-            <p className="font-bold text-slate-100">
-              ในท้ายที่สุด ในฐานะผู้ดูแลระบบ คุณเป็นผู้กำหนดและบังคับใช้มาตรฐานพฤติกรรมที่ยอมรับได้ คุณมีอำนาจในการกำหนดค่านิยมของชุมชนในโครงการ และผู้เข้าร่วมคาดหวังว่าคุณจะบังคับใช้ค่านิยมเหล่านั้นอย่างยุติธรรมและเป็นกลาง
-            </p>
-          </section>
-        </article>
-      </div>
+      </section>
 
       <footer className="flex justify-between items-center text-[10px] text-slate-600 font-black uppercase tracking-widest pt-4">
         <span>Authorization Level: ADMIN_ROOT</span>

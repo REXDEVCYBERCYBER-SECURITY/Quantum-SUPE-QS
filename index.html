@@ -10,81 +10,28 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #010409;
+            background-color: #020617;
             color: #f8fafc;
             margin: 0;
             overflow-x: hidden;
         }
         .mono {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'JetBrains+Mono', monospace;
         }
         .quantum-gradient {
-            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1) 0%, rgba(1, 4, 9, 1) 80%);
-        }
-        .critical-gradient {
-            background: radial-gradient(circle at center, rgba(239, 68, 68, 0.1) 0%, rgba(1, 4, 9, 1) 80%);
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.15) 0%, rgba(2, 6, 23, 1) 70%);
         }
         .glass-panel {
-            background: rgba(13, 17, 23, 0.7);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(56, 189, 248, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-        }
-        .crt-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.15;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
         }
         @keyframes pulse-soft {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        @keyframes flash-red {
-            0%, 100% { border-color: rgba(239, 68, 68, 0.2); }
-            50% { border-color: rgba(239, 68, 68, 0.8); box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-1px); }
-            75% { transform: translateX(1px); }
-        }
-        @keyframes rotate-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            50% { opacity: 0.7; }
         }
         .animate-pulse-soft {
             animation: pulse-soft 3s infinite ease-in-out;
-        }
-        .animate-flash-red {
-            animation: flash-red 1s infinite ease-in-out;
-        }
-        .animate-shake {
-            animation: shake 0.2s infinite ease-in-out;
-        }
-        .animate-rotate-slow {
-            animation: rotate-slow 20s linear infinite;
-        }
-        /* Custom scrollbar */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(56, 189, 248, 0.2);
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(56, 189, 248, 0.4);
         }
     </style>
 <script type="importmap">
@@ -101,7 +48,6 @@
 <link rel="stylesheet" href="/index.css">
 </head>
 <body>
-    <div class="crt-overlay"></div>
     <div id="root"></div>
 <script type="module" src="/index.tsx"></script>
 </body>

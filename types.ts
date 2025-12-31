@@ -1,4 +1,3 @@
-
 export interface QubitState {
   id: number;
   alpha: number; // probability of |0>
@@ -35,5 +34,6 @@ export enum ControlView {
   QUBIT_LAB = 'QUBIT_LAB',
   STEERING = 'STEERING',
   VOICE_COMMAND = 'VOICE_COMMAND',
-  GOVERNANCE = 'GOVERNANCE'
+  GOVERNANCE = 'GOVERNANCE',
+  PROPERTIES = 'PROPERTIES'
 }
