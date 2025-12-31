@@ -1,45 +1,13 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
-  Activity,
-  Cpu, Zap, 
-  Compass,
-  Server,
-  Orbit, 
-  Mic, 
-  MicOff,
-  ChevronUp,
-  RefreshCw, 
-  ShieldCheck,
-  Waves,
-  ZapOff,
-  BarChart3,
-  BellRing,
-  Scale, 
-  Atom,
-  Layers, 
-  Fingerprint, 
-  Lock,
-  Globe, 
-  Heart,
-  Users,
-  CheckCircle2, 
-  LayoutDashboard,
-  Database,
-  Binary,
-  Terminal, 
-  AlertCircle, 
-  Share2, 
-  Eye, 
-  Key, 
-  UserCheck,
-  Shield,
-  LogOut,
-  Zap as ZapIcon,
-  HelpCircle, 
-  MoreHorizontal
-} 
-  from 'lucide-react';
+  Activity, Cpu, Zap, Compass, Server, Orbit, Mic, MicOff, ChevronUp, RefreshCw, 
+  ShieldCheck, Waves, ZapOff, BarChart3, BellRing, Scale, Atom, Layers, 
+  Fingerprint, Lock, Globe, Heart, Users, CheckCircle2, LayoutDashboard, Database,
+  Binary, Terminal, AlertCircle, Share2, Eye, Key, UserCheck, Shield, LogOut, Zap as ZapIcon,
+  HelpCircle, MoreHorizontal, Search, History, Calendar, Info, BookOpen, Settings,
+  Workflow, Microscope, ShieldAlert, FileText, UserPlus
+} from 'lucide-react';
 import { GoogleGenAI, Modality } from '@google/genai';
 import { ControlView, QubitState, TemporalLog, QuantumMetrics, HealthStatus } from './types';
 import { QuantumVisualizer } from './components/QuantumVisualizer';
@@ -83,6 +51,7 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
 
 const App: React.FC = () => {
   const [isVerified, setIsVerified] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const [view, setView] = useState<ControlView>(ControlView.DASHBOARD);
   const [transitioning, setTransitioning] = useState(false);
   const [qubits, setQubits] = useState<QubitState[]>([]);
@@ -97,7 +66,8 @@ const App: React.FC = () => {
   const [activeToasts, setActiveToasts] = useState<{id: string, title: string, status: HealthStatus}[]>([]);
   const [systemEvents, setSystemEvents] = useState<{id: string, text: string, type: 'info' | 'warn' | 'err'}[]>([]);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [loginFields, setLoginFields] = useState({ user: '', pass: '' });
+  const [loginFields, setLoginFields] = useState({ user: '', pass: '', email: '' });
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState<'IDLE' | 'CONNECTING' | 'ACTIVE'>('IDLE');
@@ -115,6 +85,15 @@ const App: React.FC = () => {
 
   const isCriticalNoise = metrics.noiseLevel > NOISE_THRESHOLD;
   const isVisualCritical = isCriticalNoise && !dismissedAlert;
+
+  const filteredLogs = useMemo(() => {
+    if (!searchQuery) return logs;
+    const q = searchQuery.toLowerCase();
+    return logs.filter(log => 
+      log.destinationDate.toLowerCase().includes(q) || 
+      log.narrative.toLowerCase().includes(q)
+    );
+  }, [logs, searchQuery]);
 
   const changeView = (newView: ControlView) => {
     if (newView === view) return;
@@ -134,15 +113,22 @@ const App: React.FC = () => {
     setIsLoading(true);
     setLoginError(null);
 
-    // Mimics the PHP session_start and credential check logic
+    // Mimics the PHP session logic (login.php / register.php mock)
     setTimeout(() => {
-      if (loginFields.user === AUTH_CONFIG.username && loginFields.pass === AUTH_CONFIG.password) {
-        setIsVerified(true);
+      if (isRegistering) {
+        setIsRegistering(false);
         setIsLoading(false);
-        addSystemEvent("NEURAL IDENTITY CONFIRMED: ROOT ACCESS GRANTED", "info");
+        addSystemEvent("NEW IDENTITY REGISTERED IN SQL_BUFFER", "info");
+        setLoginError("Account created. Please sign in.");
       } else {
-        setLoginError("WARNING! Incorrect information.");
-        setIsLoading(false);
+        if (loginFields.user === AUTH_CONFIG.username && loginFields.pass === AUTH_CONFIG.password) {
+          setIsVerified(true);
+          setIsLoading(false);
+          addSystemEvent("NEURAL IDENTITY CONFIRMED: ROOT ACCESS GRANTED", "info");
+        } else {
+          setLoginError("WARNING! Incorrect information.");
+          setIsLoading(false);
+        }
       }
     }, 1200);
   };
@@ -153,7 +139,7 @@ const App: React.FC = () => {
     setTimeout(() => {
       setIsVerified(false);
       setTransitioning(false);
-      setLoginFields({ user: '', pass: '' });
+      setLoginFields({ user: '', pass: '', email: '' });
       setSystemEvents([]);
       setView(ControlView.DASHBOARD);
       if (isVoiceActive) {
@@ -255,15 +241,28 @@ const App: React.FC = () => {
         <div className="absolute top-0 left-0 w-full h-full animate-[scanline_12s_linear_infinite] bg-gradient-to-b from-transparent via-sky-500/20 to-transparent" />
       </div>
       
-      {/* Login Container incorporating requested Uiverse palette (rgba(167, 139, 250, 1) - Soft Purple) */}
-      <div className="glass-panel p-8 sm:p-12 rounded-[1.5rem] border-sky-500/20 max-w-[340px] w-full space-y-8 relative z-10 shadow-[0_0_100px_rgba(167,139,250,0.05)] animate-view-entry">
+      <div className="glass-panel p-8 sm:p-12 rounded-[1.5rem] border-sky-500/20 max-w-[400px] w-full space-y-8 relative z-10 shadow-[0_0_100px_rgba(167,139,250,0.05)] animate-view-entry">
         <div className="text-center space-y-2">
-          <p className="text-2xl font-bold text-white tracking-tight">Login</p>
+          <p className="text-2xl font-bold text-white tracking-tight">{isRegistering ? 'Create Account' : 'Login'}</p>
           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mono">Quantum-Superscript System</p>
         </div>
 
         <form className="space-y-6" onSubmit={handleVerify}>
           <div className="space-y-4">
+            {isRegistering && (
+              <div className="group space-y-1">
+                <label htmlFor="email" className="text-[11px] font-bold text-slate-400 block ml-1">Email Address</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  id="email" 
+                  value={loginFields.email}
+                  onChange={(e) => setLoginFields(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full bg-[#111827] border border-[#374151] rounded-lg py-3 px-4 text-sm font-medium text-white outline-none focus:border-[#a78bfa] transition-all"
+                  required
+                />
+              </div>
+            )}
             <div className="group space-y-1">
               <label htmlFor="username" className="text-[11px] font-bold text-slate-400 block ml-1">Username</label>
               <input 
@@ -289,14 +288,16 @@ const App: React.FC = () => {
                 className="w-full bg-[#111827] border border-[#374151] rounded-lg py-3 px-4 text-sm font-medium text-white outline-none focus:border-[#a78bfa] transition-all"
                 required
               />
-              <div className="flex justify-end pt-1">
-                <a href="#" className="text-[11px] font-medium text-slate-500 hover:text-[#a78bfa] transition-colors">Forgot Password ?</a>
-              </div>
+              {!isRegistering && (
+                <div className="flex justify-end pt-1">
+                  <a href="#" className="text-[11px] font-medium text-slate-500 hover:text-[#a78bfa] transition-colors">Forgot Password ?</a>
+                </div>
+              )}
             </div>
           </div>
 
           {loginError && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-[10px] text-red-400 font-bold uppercase text-center animate-pulse">
+            <div className={`p-3 border rounded-lg text-[10px] font-bold uppercase text-center animate-pulse ${loginError.includes('Incorrect') ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
               {loginError}
             </div>
           )}
@@ -307,30 +308,32 @@ const App: React.FC = () => {
             className="w-full py-3 bg-[#a78bfa] hover:brightness-110 transition-all rounded-lg text-[#111827] font-bold text-sm flex items-center justify-center gap-3 disabled:opacity-50 active:scale-[0.98]"
           >
             {isLoading ? <RefreshCw className="animate-spin" size={18} /> : null}
-            {isLoading ? 'VERIFYING...' : 'Sign in'}
+            {isLoading ? 'VERIFYING...' : (isRegistering ? 'Register' : 'Sign in')}
           </button>
         </form>
 
         <div className="flex items-center gap-3 pt-2">
           <div className="h-px bg-[#374151] flex-1"></div>
-          <p className="text-[11px] text-slate-500 font-medium">Login with social accounts</p>
+          <p className="text-[11px] text-slate-500 font-medium">Authentication Channels</p>
           <div className="h-px bg-[#374151] flex-1"></div>
         </div>
 
-        <div className="flex justify-center gap-2">
-          {[
-            { label: "Google", icon: (props: any) => <svg {...props} viewBox="0 0 32 32"><path d="M16.318 13.714v5.484h9.078c-0.37 2.354-2.745 6.901-9.078 6.901-5.458 0-9.917-4.521-9.917-10.099s4.458-10.099 9.917-10.099c3.109 0 5.193 1.318 6.38 2.464l4.339-4.182c-2.786-2.599-6.396-4.182-10.719-4.182-8.844 0-16 7.151-16 16s7.156 16 16 16c9.234 0 15.365-6.49 15.365-15.635 0-1.052-0.115-1.854-0.255-2.651z" fill="currentColor"/></svg> },
-            { label: "Twitter", icon: (props: any) => <svg {...props} viewBox="0 0 32 32"><path d="M31.937 6.093c-1.177 0.516-2.437 0.871-3.765 1.032 1.355-0.813 2.391-2.099 2.885-3.631-1.271 0.74-2.677 1.276-4.172 1.579-1.192-1.276-2.896-2.079-4.787-2.079-3.625 0-6.563 2.937-6.563 6.557 0 0.521 0.063 1.021 0.172 1.495-5.453-0.255-10.287-2.875-13.52-6.833-0.568 0.964-0.891 2.084-0.891 3.303 0 2.281 1.161 4.281 2.916 5.457-1.073-0.031-2.083-0.328-2.968-0.817v0.079c0 3.181 2.26 5.833 5.26 6.437-0.547 0.145-1.131 0.229-1.724 0.229-0.421 0-0.823-0.041-1.224-0.115 0.844 2.604 3.26 4.5 6.14 4.557-2.239 1.755-5.077 2.801-8.135 2.801-0.521 0-1.041-0.025-1.563-0.088 2.917 1.86 6.36 2.948 10.079 2.948 12.067 0 18.661-9.995 18.661-18.651 0-0.276 0-0.557-0.021-0.839 1.287-0.917 2.401-2.079 3.281-3.396z" fill="currentColor"/></svg> },
-            { label: "GitHub", icon: (props: any) => <svg {...props} viewBox="0 0 32 32"><path d="M16 0.396c-8.839 0-16 7.167-16 16 0 7.073 4.584 13.068 10.937 15.183 0.803 0.151 1.093-0.344 1.093-0.772 0-0.38-0.009-1.385-0.015-2.719-4.453 0.964-5.391-2.151-5.391-2.151-0.729-1.844-1.781-2.339-1.781-2.339-1.448-0.989 0.115-0.968 0.115-0.968 1.604 0.109 2.448 1.645 2.448 1.645 1.427 2.448 3.744 1.74 4.661 1.328 0.14-1.031 0.557-1.74 1.011-2.135-3.552-0.401-7.287-1.776-7.287-7.907 0-1.751 0.62-3.177 1.645-4.297-0.177-0.401-0.719-2.031 0.141-4.235 0 0 1.339-0.427 4.4 1.641 1.281-0.355 2.641-0.532 4-0.541 1.36 0.009 2.719 0.187 4 0.541 3.043-2.068 4.381-1.641 4.381-1.641 0.859 2.204 0.317 3.833 0.161 4.235 1.015 1.12 1.635 2.547 1.635 4.297 0 6.145-3.74 7.5-7.296 7.891 0.556 0.479 1.077 1.464 1.077 2.959 0 2.14-0.020 3.864-0.020 4.385 0 0.416 0.28 0.916 1.104 0.755 6.4-2.093 10.979-8.093 10.979-15.156 0-8.833-7.161-16-16-16z" fill="currentColor"/></svg> }
-          ].map((social, i) => (
-            <button key={i} aria-label={`Log in with ${social.label}`} className="p-2 text-white hover:text-[#a78bfa] transition-all">
-              <social.icon className="w-5 h-5" />
-            </button>
-          ))}
+        <div className="flex justify-center gap-4">
+           {[Fingerprint, Key, ShieldCheck].map((Icon, idx) => (
+             <button key={idx} className="p-3 bg-white/5 border border-white/5 rounded-xl hover:bg-[#a78bfa]/10 hover:border-[#a78bfa]/20 transition-all text-slate-400 hover:text-[#a78bfa]">
+               <Icon size={18} />
+             </button>
+           ))}
         </div>
         
         <p className="text-center text-[11px] text-slate-500 font-medium">
-          Don't have an account? <a href="#" className="text-white hover:underline">Sign up</a>
+          {isRegistering ? 'Already have an account?' : "Don't have an account?"} {' '}
+          <button 
+            onClick={() => setIsRegistering(!isRegistering)}
+            className="text-white hover:underline font-bold"
+          >
+            {isRegistering ? 'Sign in' : 'Sign up'}
+          </button>
         </p>
       </div>
     </div>
@@ -434,9 +437,9 @@ const App: React.FC = () => {
       <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-sky-500/10 pb-16 gap-10">
         <div className="space-y-6">
           <div className="flex items-center gap-6">
-              <div className="p-5 bg-sky-500/10 rounded-3xl text-sky-400 shadow-2xl border border-sky-500/10"><Scale size={42} /></div>
+              <div className="p-5 bg-sky-500/10 rounded-3xl text-sky-400 shadow-2xl border border-sky-500/10"><BookOpen size={42} /></div>
               <div>
-                  <h1 className="text-7xl font-black text-slate-100 uppercase tracking-tighter italic leading-none mb-3">System Properties</h1>
+                  <h1 className="text-7xl font-black text-slate-100 uppercase tracking-tighter italic leading-none mb-3">Handbook</h1>
                   <p className="text-sky-500 text-xs font-black uppercase tracking-[0.8em] flex items-center gap-5">
                     คุณสมบัติของระบบควบคุม Quantum-Superscript
                   </p>
@@ -458,7 +461,35 @@ const App: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
         <div className="lg:col-span-8 space-y-16">
-          <div className="glass-panel p-10 sm:p-14 rounded-[3rem] border-emerald-500/20 bg-emerald-500/5 relative overflow-hidden group border-t-4 border-t-emerald-500/30">
+          {/* Core System Properties Section */}
+          <div className="glass-panel p-10 sm:p-14 rounded-[3rem] border-sky-500/10 bg-sky-900/5 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                  <Workflow size={200} className="text-sky-400" />
+              </div>
+              <div className="relative z-10 space-y-10">
+                  <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-sky-400 text-[10px] font-black uppercase tracking-[0.4em]">
+                          <Settings size={16} /> Technical Specifications / ข้อมูลทางเทคนิค
+                      </div>
+                      <h2 className="text-5xl font-black text-white uppercase tracking-tighter leading-none italic">พลศาสตร์ของระบบควบคุม</h2>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="p-8 bg-white/5 rounded-[2rem] border border-white/5 hover:border-sky-500/20 transition-all space-y-4">
+                          <div className="p-3 bg-sky-500/10 rounded-2xl w-fit text-sky-400"><Microscope size={24} /></div>
+                          <h4 className="text-lg font-black text-sky-400 uppercase tracking-tighter italic">Stability (เสถียรภาพ)</h4>
+                          <p className="text-sm text-slate-400 font-medium leading-relaxed">ระบบใช้การควบคุมแบบป้อนกลับควอนตัม (Quantum Feedback Control) เพื่อรักษาเสถียรภาพของไทม์ไลน์ แม้ในสภาวะที่มีสัญญาณรบกวนสูงถึง 15.2dB</p>
+                      </div>
+                      <div className="p-8 bg-white/5 rounded-[2rem] border border-white/5 hover:border-emerald-500/20 transition-all space-y-4">
+                          <div className="p-3 bg-emerald-500/10 rounded-2xl w-fit text-emerald-400"><ZapIcon size={24} /></div>
+                          <h4 className="text-lg font-black text-emerald-400 uppercase tracking-tighter italic">Responsiveness (การตอบสนอง)</h4>
+                          <p className="text-sm text-slate-400 font-medium leading-relaxed">การประมวลผลผ่าน Neural Manifold ช่วยให้การสลับโหมดการทำงานเกิดขึ้นได้ในระดับนาโนวินาที (Sub-nanosecond switching latency)</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div className="glass-panel p-10 sm:p-14 rounded-[3rem] border-emerald-500/20 bg-emerald-500/5 relative overflow-hidden group border-t-4 border-t-emerald-500/30 shadow-2xl">
               <div className="absolute -top-10 -right-10 p-12 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity rotate-12">
                   <Globe size={300} className="text-emerald-400" />
               </div>
@@ -495,13 +526,14 @@ const App: React.FC = () => {
         <div className="lg:col-span-4 space-y-10">
           <div className="glass-panel rounded-[2.5rem] p-10 border-indigo-500/20 bg-gradient-to-br from-indigo-500/5 to-transparent h-fit sticky top-12 shadow-2xl">
             <h3 className="text-xl font-black text-indigo-400 mb-10 uppercase tracking-tighter flex items-center gap-4 italic border-b border-white/5 pb-4">
-              <Binary size={24} /> Mission Identity
+              <Binary size={24} /> Identity Registry
             </h3>
             <div className="space-y-6">
               {[
                 { label: "Core Version", value: "QS_4.2.1-PRO", icon: Terminal },
                 { label: "Stabilization", value: "Verified High", icon: Lock },
-                { label: "Identity Hash", value: "SHA-Q512", icon: Fingerprint }
+                { label: "Identity Hash", value: "SHA-Q512", icon: Fingerprint },
+                { label: "Encryption", value: "AES-QUBIT", icon: ShieldAlert }
               ].map((spec, i) => (
                 <div key={i} className="flex items-center justify-between py-4 border-b border-white/5 last:border-0">
                   <div className="flex items-center gap-4">
@@ -515,6 +547,15 @@ const App: React.FC = () => {
             <button className="w-full mt-10 py-5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[10px] font-black text-white uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 shadow-[0_10px_30px_rgba(79,70,229,0.3)]">
               <Share2 size={16} /> Update Registry
             </button>
+          </div>
+
+          <div className="glass-panel rounded-[2.5rem] p-8 border-red-500/10 bg-red-500/5 space-y-6">
+            <h4 className="text-[10px] font-black text-red-400 uppercase tracking-widest flex items-center gap-2">
+                <ShieldAlert size={14}/> Security Alerts
+            </h4>
+            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-[11px] text-red-300 font-medium italic leading-relaxed">
+                Unauthorized access attempts detected from Sector 7G. Neural firewall integrity at 88%.
+            </div>
           </div>
         </div>
       </div>
@@ -552,7 +593,7 @@ const App: React.FC = () => {
 
   const renderSidebar = () => (
     <nav className="w-20 lg:w-28 bg-slate-950/90 border-r border-white/5 flex flex-col items-center py-10 gap-8 relative z-50">
-      <div className="w-12 h-12 bg-sky-500 rounded-[1rem] flex items-center justify-center shadow-[0_0_20px_rgba(56,189,248,0.4)] mb-6 group cursor-pointer hover:rotate-12 transition-transform">
+      <div className="w-12 h-12 bg-sky-500 rounded-[1.5rem] flex items-center justify-center shadow-[0_0_20px_rgba(56,189,248,0.4)] mb-6 group cursor-pointer hover:rotate-12 transition-transform">
         <Orbit size={24} className="text-white animate-spin-slow" />
       </div>
       
@@ -562,7 +603,7 @@ const App: React.FC = () => {
         { id: ControlView.QUBIT_LAB, icon: Cpu, label: 'Lab' },
         { id: ControlView.STEERING, icon: Compass, label: 'Steer' },
         { id: ControlView.VOICE_COMMAND, icon: Mic, label: 'Ziggy' },
-        { id: ControlView.PROPERTIES, icon: Scale, label: 'Props' }
+        { id: ControlView.PROPERTIES, icon: BookOpen, label: 'Handbook' }
       ].map((item) => (
         <button
           key={item.id}
@@ -596,7 +637,7 @@ const App: React.FC = () => {
       
       <div className="fixed bottom-10 right-10 flex flex-col gap-6 z-[1000]">
         {activeToasts.map((toast) => (
-          <div key={toast.id} className={`glass-panel p-8 pr-12 rounded-[2rem] flex items-center gap-6 animate-in slide-in-from-right-12 fade-in duration-700 border-l-[10px] ${toast.status === 'CRITICAL' ? 'border-l-red-500 animate-shake' : 'border-l-amber-500'}`}>
+          <div key={toast.id} className={`glass-panel p-8 pr-12 rounded-[2.5rem] flex items-center gap-6 animate-in slide-in-from-right-12 fade-in duration-700 border-l-[10px] ${toast.status === 'CRITICAL' ? 'border-l-red-500 animate-shake' : 'border-l-amber-500'}`}>
             <div className={`p-4 rounded-xl ${toast.status === 'CRITICAL' ? 'bg-red-500/20 text-red-500' : 'bg-amber-500/20 text-amber-500'}`}>
                <BellRing size={22} className="animate-pulse" />
             </div>
@@ -667,17 +708,77 @@ const App: React.FC = () => {
             </div>
           )}
           {view === ControlView.TEMPORAL_LEAP && (
-            <div className="p-12 lg:p-32 flex flex-col items-center justify-center h-full max-w-7xl mx-auto space-y-24 animate-view-entry">
-                <div className="text-center space-y-8 max-w-4xl">
-                  <h2 className="text-[9rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-indigo-600 uppercase tracking-tighter italic leading-none hologram-glow">Jump Gate</h2>
+            <div className="p-8 lg:p-20 flex flex-col items-center justify-start min-h-full max-w-7xl mx-auto space-y-20 animate-view-entry">
+                <div className="text-center space-y-6 max-w-4xl">
+                  <div className="px-4 py-1.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-[10px] font-black text-sky-400 mono uppercase tracking-[0.6em] w-fit mx-auto mb-2">Sub-Space_Jump_Portal</div>
+                  <h2 className="text-[6rem] sm:text-[9rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-indigo-600 uppercase tracking-tighter italic leading-none hologram-glow">Jump Gate</h2>
+                  <p className="text-slate-500 text-lg sm:text-xl font-medium tracking-tight leading-relaxed max-w-2xl mx-auto italic font-serif">"Confirm temporal era coordinates. Deceleration manifold synchronized for sectoral displacement."</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 w-full">
-                  <div className="glass-panel p-16 rounded-[4rem] space-y-12 border-sky-500/10 hover:border-sky-500/30 transition-all flex flex-col justify-center relative shadow-xl">
-                    <input type="date" value={targetDate} onChange={(e) => setTargetDate(e.target.value)} className="bg-slate-950 border-b-4 border-sky-500/20 hover:border-sky-500/50 transition-colors rounded-2xl p-10 text-5xl font-black text-white outline-none w-full text-center mono shadow-2xl focus:scale-105" />
-                    <button onClick={handleLeap} disabled={isLoading} className="w-full py-8 bg-sky-600 hover:bg-sky-500 transition-all rounded-[2rem] text-3xl font-black text-white shadow-xl flex items-center justify-center gap-6 group disabled:opacity-50 active:scale-[0.98]">
-                      {isLoading ? <RefreshCw className="animate-spin" size={40} /> : <Zap size={40} />}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full">
+                  <div className="glass-panel p-10 sm:p-14 rounded-[3rem] space-y-10 border-sky-500/10 hover:border-sky-500/30 transition-all flex flex-col justify-center relative shadow-xl">
+                    <div className="absolute top-8 right-10 opacity-10 font-black mono text-[9px] tracking-widest uppercase">Targeting_Unit_07</div>
+                    <div className="space-y-4">
+                        <div className="text-[11px] text-sky-500 font-black uppercase tracking-[0.4em] text-center mb-2 italic flex items-center justify-center gap-3"><Calendar size={14}/> Destination Era</div>
+                        <input 
+                            type="date" 
+                            value={targetDate} 
+                            onChange={(e) => setTargetDate(e.target.value)} 
+                            className="bg-slate-950 border-b-4 border-sky-500/20 hover:border-sky-500/50 transition-colors rounded-2xl p-8 text-4xl sm:text-5xl font-black text-white outline-none w-full text-center mono shadow-2xl focus:scale-[1.02]" 
+                        />
+                    </div>
+                    <button 
+                        onClick={handleLeap} 
+                        disabled={isLoading} 
+                        className="w-full py-6 bg-sky-600 hover:bg-sky-500 transition-all rounded-[2rem] text-2xl sm:text-3xl font-black text-white shadow-xl flex items-center justify-center gap-6 group disabled:opacity-50 active:scale-[0.98]"
+                    >
+                      {isLoading ? <RefreshCw className="animate-spin" size={32} /> : <Zap size={32} className="group-hover:scale-125 transition-transform duration-500" />}
                       {isLoading ? 'SYNCING...' : 'INITIATE JUMP'}
                     </button>
+                  </div>
+
+                  <div className="glass-panel p-10 sm:p-14 rounded-[3rem] border-sky-500/10 flex flex-col h-[600px] shadow-xl overflow-hidden group">
+                    <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
+                        <h3 className="text-xl font-black text-sky-400 uppercase tracking-tighter italic flex items-center gap-4">
+                            <History size={24} /> Temporal Archive
+                        </h3>
+                        <div className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-black text-slate-500 mono">{logs.length} RECORDS</div>
+                    </div>
+
+                    <div className="relative mb-8">
+                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-600">
+                            <Search size={18} />
+                        </div>
+                        <input 
+                            type="text" 
+                            placeholder="SEARCH ARCHIVES..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-slate-950 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-sky-400 outline-none focus:border-sky-500/40 transition-all placeholder:text-slate-800 mono tracking-widest"
+                        />
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 pr-4">
+                        {filteredLogs.map((log) => (
+                            <div key={log.id} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 hover:bg-white/10 transition-all space-y-4 group/card relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover/card:opacity-20 transition-opacity">
+                                    <Info size={14} className="text-sky-400" />
+                                </div>
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-1">
+                                        <div className="text-[10px] text-sky-500 font-black uppercase tracking-widest italic">Temporal Coordinate</div>
+                                        <div className="text-xl font-black text-white mono">{log.destinationDate}</div>
+                                    </div>
+                                    <div className="text-right space-y-1">
+                                        <div className="text-[10px] text-emerald-500 font-black uppercase tracking-widest">Stability</div>
+                                        <div className="text-sm font-black text-emerald-400 mono">{log.stability.toFixed(1)}%</div>
+                                    </div>
+                                </div>
+                                <p className="text-sm text-slate-400 font-medium leading-relaxed italic line-clamp-3">"{log.narrative}"</p>
+                                <div className="text-[9px] text-slate-700 mono uppercase tracking-widest pt-2">ENTRY_LOG_ID: {log.id.slice(0,8).toUpperCase()}</div>
+                            </div>
+                        ))}
+                    </div>
                   </div>
                 </div>
             </div>
@@ -709,3 +810,5 @@ const App: React.FC = () => {
     </div>
   );
 };
+
+export default App;
