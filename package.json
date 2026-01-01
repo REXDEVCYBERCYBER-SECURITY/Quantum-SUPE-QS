@@ -20,4 +20,10 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }
+  {
+  "engines": {
+    "pnpm": "^7.5.1"
+  },
+  "packageManager": "pnpm@7.5.1"
+}
 }
