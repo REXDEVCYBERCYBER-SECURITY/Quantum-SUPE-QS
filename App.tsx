@@ -12,7 +12,7 @@ import { GoogleGenAI, Modality } from '@google/genai';
 import { ControlView, QubitState, TemporalLog, QuantumMetrics, HealthStatus } from './types';
 import { QuantumVisualizer } from './components/QuantumVisualizer';
 import { generateTemporalLog } from './services/geminiService';
-
+import { Analytics } from "@vercel/analytics/next"
 // Credentials mimic the requested PHP config.php behavior
 const AUTH_CONFIG = {
   username: "ROOT_ADMIN_MARIO",
