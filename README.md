@@ -1,60 +1,47 @@
-# REXDEVCYBER: Cyber-Tech-Explorer
+# Quantum-Superscript Control System (QS_CTRL)
 
-![REXDEVCYBER Banner] <img width="757" height="341" alt="image" src="https://github.com/user-attachments/assets/e59b0eb3-a0ba-4906-9ab8-45e0a6470dcb" />
+A cutting-edge, cinematic dashboard designed for the simulation and management of quantum computing operations and temporal navigation ("Quantum Leap" scenarios). This application blends technical telemetry with narrative-driven AI to create an immersive "Command Center" experience.
 
-## 🛡️ Mission Statement
-**REXDEVCYBER** is built on the vision that high-quality, practical security templates and learning resources should be accessible to everyone. We operate a global fiber network archive that stores mission-critical statistics, traffic database blocks, and investigative logs to empower the cybersecurity community.
+## 🌌 Features
 
-> "Our mission is to make it easier for everyone to create beneficial learning, guidance, and development resources."
+### 1. Quantum Telemetry & Real-time Metrics
+- **Live Feed**: Fluctuating data streams for Entanglement Levels, Coherence Time, Gate Operations, and Quantum Noise.
+- **Dynamic Indicators**: Visual health statuses (Optimal, Warning, Critical) for core hardware components.
+- **Critical Alert System**: Automated visual triggers (shaking, flashing, red-shift) when noise levels exceed safety thresholds.
 
----
+### 2. System Properties (คุณสมบัติของระบบควบคุม)
+- **High-Fidelity Thai Support**: Detailed technical specifications provided in both English and Thai for localized mission control.
+- **QS_Engine Architecture**: Deep dive into the fractal qubit topology and cryogenic cooling arrays.
+- **AI Security & Governance**: Advanced neural safeguards based on the 2025 AI Governance Framework (ISO-2025-AI) to prevent model poisoning and unauthorized timeline drift.
 
-## 🚀 Core Features
+### 3. Temporal Leap Engine (AI-Powered)
+- **Narrative Generation**: Uses the **Gemini 3 Flash** model to generate dramatic, cinematic mission logs.
+- **Stability Analysis**: Real-time predictive analysis of timeline divergence risks using **Gemini 3 Pro** for complex reasoning.
+- **Navigation Console**: Precision control for coordinate input and "Quantum Power Steering" to stabilize dimensional manifolds.
 
-### 🌐 Network Intelligence
-Real-time monitoring of our global fiber nodes. The dashboard provides live telemetry on network load, security threats, and data processing integrity across our traffic blocks.
+### 4. Ziggy Neural Interface
+- **Native Audio Integration**: Real-time, low-latency voice link using the **Gemini 2.5 Flash Native Audio** model.
+- **Status Telemetry**: Hands-free system reporting and haptic feedback diagnostics via a conversational AI interface.
 
-### 🔍 AI Security Terminal
-Advanced vulnerability analysis powered by **Gemini 3 Pro**. Users can input technical scenarios or traffic patterns to receive:
-- Vulnerability Identification
-- Severity Assessment (Heuristic engine)
-- Impact Analysis
-- Detailed Remediation Protocols
+## 🛠️ Technical Stack
 
-### 🛒 The REX Store
-A curated marketplace offering both **Free Open Source** tools and **Premium Cyber Assets**. 
-- **Free:** Secure-Login Boilerplates, Investigation Log Toolkits.
-- **Premium:** Fiber-Network Statistics Cores, Advanced Vulnerability Kits.
+- **Frontend**: React 19 (ESM-native), Tailwind CSS.
+- **Icons**: Lucide React for high-fidelity iconography.
+- **AI Integration**: `@google/genai` (Google Gemini API).
+- **Security**: Hardened "Neural Shield" v4.0 with SAST scanning and EthicalCheck compliance.
 
-### 📡 Intelligence Feed
-Real-time cybersecurity news stream. Our system identifies and categorizes global threats into **CRITICAL**, **HIGH**, and **INFO** levels, providing investigative summaries for rapid response.
+## 🤖 AI Integration Details
 
-### 📚 Knowledge Base & Methodology
-A structured 7-step security framework covering everything from Scope Definition to Continuous Improvement, ensuring a structured approach to defensive and offensive operations.
+The system leverages multiple Gemini models for specialized tasks:
+- **`gemini-3-flash-preview`**: Drives the `generateTemporalLog` for professional sci-fi narrative construction.
+- **`gemini-3-pro-preview`**: Powers the `analyzeQuantumStability` module for high-stakes STEM/Quantum reasoning and JSON-formatted risk prediction.
+- **`gemini-2.5-flash-native-audio-preview`**: Facilitates the **Ziggy Neural Interface**, providing human-like spoken responses and real-time audio telemetry.
 
----
+## 🎨 Aesthetic Principles
 
-## 🛠️ Technology Stack
-- **Frontend:** React 19 (ESM) + TypeScript
-- **Styling:** Tailwind CSS (Custom Cyber Theme)
-- **AI Engine:** Google Gemini API (@google/genai)
-- **Visualization:** Recharts (High-performance SVG charts)
-- **Icons:** Lucide React
-
----
-
-## 📜 Licensing
-This project maintains a dual-licensing model:
-- **Open Source Tools:** Released under the **MIT License**.
-- **Premium Assets:** Subject to proprietary commercial terms.
-
-For more details, see the [Knowledge > License](#) section within the application.
+- **Glassmorphism**: High-blur backdrops with subtle borders.
+- **Cyber-Blue Palette**: Primary sky-400/500 palette with amber/red overlays for alert states.
+- **Mono Typography**: JetBrains Mono for a professional, technical "developer" feel.
 
 ---
-
-## 🌐 Official Links
-- **Portal:** [https://rexdevcyber.web.app](https://rexdevcyber.web.app)
-- **Archive:** Fiber-Tech-Explorer Network
-
----
-*© 2025 REXDEVCYBER. All systems protected by advanced fiber-grid encryption.*
+*Developed for the next generation of temporal travelers, AI security researchers, and quantum engineers.*

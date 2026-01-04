@@ -1,22 +1,34 @@
-# Security Policy
+# Security Policy: QS_CTRL Neural Safeguards
 
-## Supported Versions
+## 🛡️ Commitment to Dimensional Integrity
 
-Only the latest version of REXDEVCYBER is currently supported with security updates.
+At the Quantum-Superscript Control System (QS_CTRL), maintaining the security of our temporal manifolds and sub-register registers is our highest priority. We recognize that vulnerabilities in the neural link or quantum steering protocols could lead to catastrophic timeline divergence.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## 🚀 Supported Versions
 
-## Reporting a Vulnerability
+The following versions of the Quantum-Superscript Control System are currently receiving active security patches and neural fortification updates:
 
-We take the security of our fiber network and AI terminal seriously. If you believe you have found a security vulnerability, please report it to us by following these steps:
+| Version | Status | Neural Shielding Level |
+| :--- | :--- | :--- |
+| v2.5.x | ✅ Supported | AES-QUBIT 2048-BIT |
+| v2.0.x | ⚠️ Legacy Support | AES-QUBIT 1024-BIT |
+| < v2.0 | ❌ End of Life | DEPRECATED |
 
-1.  **Do Not** open a public GitHub issue.
-2.  Email your findings to `security@rexdevcyber.example.com` (Note: This is a placeholder).
-3.  Include a detailed description of the vulnerability, steps to reproduce, and potential impact.
+## 📡 Reporting a Vulnerability
 
-We will acknowledge receipt of your report within 48 hours and provide a timeline for remediation. We ask that you follow responsible disclosure practices until a fix is released.
+If you discover a security vulnerability—whether it be a sub-space packet collision, a leak in the cryogenic coolant encryption, or an unauthorized bypass of the Ziggy Neural Interface—please do not initiate a public log.
 
-Thank you for helping keep the REXDEVCYBER network secure.
+Instead, follow these protocols:
+
+1.  **Encrypted Dispatch**: Send a detailed report of the anomaly to `security@quantum-superscript.io`.
+2.  **Telemetry Data**: Include steps to reproduce the breach, the specific component affected (e.g., Qubit Lab, Steering Manifold), and any relevant console logs.
+3.  **Containment**: Allow our team 72 temporal hours to evaluate the risk and deploy a neural patch before discussing the vulnerability with other travelers.
+
+## 🔍 Continuous Fortification
+
+QS_CTRL utilizes automated security protocols including:
+- **EthicalCheck**: Continuous API security testing to prevent unauthorized sub-space access.
+- **Fortify SAST**: Static analysis of neural pathways to ensure code integrity before leap deployment.
+
+---
+*Your vigilance helps keep the timeline stable. Leap responsibly.*

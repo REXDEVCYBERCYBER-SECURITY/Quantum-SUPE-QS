@@ -8,53 +8,88 @@ interface Props {
 
 export const QuantumVisualizer: React.FC<Props> = ({ qubits }) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
       {qubits.map((q) => {
-        const radius = 40;
+        const radius = 35;
         const centerX = 50;
         const centerY = 50;
-        // Simple probability visualization
-        const probabilityHeight = q.beta * 80;
+        const orbitX = centerX + Math.cos(q.phase) * radius;
+        const orbitY = centerY + Math.sin(q.phase) * radius;
 
         return (
-          <div key={q.id} className="glass-panel p-4 rounded-xl flex flex-col items-center border-sky-500/30 hover:border-sky-400 transition-all duration-300">
-            <h3 className="text-xs font-bold text-sky-400 mb-2 mono">QUBIT_{q.id.toString().padStart(2, '0')}</h3>
-            <svg width="100" height="100" viewBox="0 0 100 100" className="drop-shadow-[0_0_8px_rgba(56,189,248,0.4)]">
-              {/* Outer Ring */}
-              <circle
-                cx={centerX}
-                cy={centerY}
-                r={radius}
-                fill="none"
-                stroke="rgba(56, 189, 248, 0.2)"
-                strokeWidth="2"
-              />
-              {/* State Indicator */}
-              <rect
-                x={centerX - 10}
-                y={centerY + 40 - probabilityHeight}
-                width="20"
-                height={probabilityHeight}
-                className="fill-sky-500/50"
-              />
-              {/* Pulse circle for phase */}
-              <circle
-                cx={centerX + Math.cos(q.phase) * radius}
-                cy={centerY + Math.sin(q.phase) * radius}
-                r="4"
-                className="fill-cyan-400 animate-pulse"
-              />
-            </svg>
-            <div className="mt-3 text-[10px] w-full space-y-1">
-              <div className="flex justify-between">
-                <span className="text-slate-500">PROB |1&gt;</span>
-                <span className="text-sky-300">{(q.beta * 100).toFixed(1)}%</span>
+          <div key={q.id} className="glass-panel p-6 rounded-3xl flex flex-col items-center border-sky-500/10 hover:border-sky-400/30 hover:bg-sky-500/5 transition-all duration-500 group relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-2 opacity-10">
+                <span className="mono text-[8px] text-sky-400">REG_{q.id.toString().padStart(2, '0')}</span>
+            </div>
+            
+            <h3 className="text-[10px] font-black text-slate-500 mb-4 mono uppercase tracking-widest group-hover:text-sky-400 transition-colors">Q-Bit Sequence {q.id}</h3>
+            
+            <div className="relative">
+                <svg width="120" height="120" viewBox="0 0 100 100" className="drop-shadow-[0_0_12px_rgba(56,189,248,0.2)]">
+                  {/* Background Aura */}
+                  <circle cx="50" cy="50" r="45" fill="rgba(56, 189, 248, 0.02)" />
+                  
+                  {/* Outer Orbit Path */}
+                  <circle
+                    cx={centerX}
+                    cy={centerY}
+                    r={radius}
+                    fill="none"
+                    stroke="rgba(56, 189, 248, 0.1)"
+                    strokeWidth="0.5"
+                    strokeDasharray="4 2"
+                  />
+                  
+                  {/* Coherence Gradient */}
+                  <defs>
+                    <radialGradient id={`grad-${q.id}`} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                      <stop offset="0%" style={{ stopColor: 'rgba(56, 189, 248, 0.4)', stopOpacity: 1 }} />
+                      <stop offset="100%" style={{ stopColor: 'rgba(56, 189, 248, 0)', stopOpacity: 0 }} />
+                    </radialGradient>
+                  </defs>
+
+                  {/* Probability Mass */}
+                  <circle
+                    cx={centerX}
+                    cy={centerY}
+                    r={q.beta * 30}
+                    fill={`url(#grad-${q.id})`}
+                    className="transition-all duration-700"
+                  />
+
+                  {/* Rotating Phase Indicator */}
+                  <line
+                    x1={centerX}
+                    y1={centerY}
+                    x2={orbitX}
+                    y2={orbitY}
+                    stroke="rgba(56, 189, 248, 0.3)"
+                    strokeWidth="1"
+                  />
+                  
+                  <circle
+                    cx={orbitX}
+                    cy={orbitY}
+                    r="3"
+                    className="fill-sky-400 shadow-[0_0_10px_rgba(56,189,248,1)]"
+                  />
+                </svg>
+            </div>
+
+            <div className="mt-6 text-[10px] w-full space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 uppercase tracking-tighter font-bold">State Density</span>
+                <span className="text-sky-300 font-black mono">{(q.beta * 100).toFixed(1)}%</span>
               </div>
-              <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-0.5 bg-slate-900 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-sky-500 transition-all duration-500" 
+                  className="h-full bg-gradient-to-r from-sky-600 to-sky-400 transition-all duration-1000" 
                   style={{ width: `${q.beta * 100}%` }}
                 />
+              </div>
+              <div className="flex justify-between items-center pt-1 text-[8px] text-slate-600 mono uppercase">
+                <span>Phase Shift</span>
+                <span>{(q.phase % (Math.PI * 2)).toFixed(2)} rad</span>
               </div>
             </div>
           </div>
