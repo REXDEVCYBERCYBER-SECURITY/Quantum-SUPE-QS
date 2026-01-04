@@ -1,51 +1,78 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Guideline: Use process.env.API_KEY directly when initializing GoogleGenAI.
-// Guideline: Create instance right before making an API call to ensure it uses the most up-to-date API key.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-export const generateTemporalLog = async (targetDate: string, currentStatus: string) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const analyzeSecurityVulnerability = async (input: string) => {
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
-    contents: `Write a short, cinematic sci-fi mission log for a "Quantum Leap" time traveler landing on ${targetDate}. Current system status: ${currentStatus}. Keep it professional, dramatic, and under 100 words. Mention 'Quantum-Superscript' technology.`,
+    contents: `Analyze the following technical scenario or vulnerability description: "${input}". 
+    Provide a detailed assessment including:
+    1. Identified Vulnerability Name
+    2. Severity (CRITICAL, HIGH, MEDIUM, LOW)
+    3. Potential Impact
+    4. Remediation Steps`,
     config: {
-      temperature: 0.9,
-    },
-  });
-  return response.text;
-};
-
-export const analyzeQuantumStability = async (qubitData: any) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  // Using gemini-3-pro-preview for complex reasoning task (STEM/Quantum analysis)
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Analyze these quantum states: ${JSON.stringify(qubitData)}. Predict the probability of timeline divergence in a "Quantum Leap" scenario. Return a JSON object.`,
-    config: {
+      temperature: 0.7,
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          divergenceRisk: { type: Type.NUMBER },
-          reasoning: { type: Type.STRING },
-          recommendedAction: { type: Type.STRING }
+          vulnerability: { type: Type.STRING },
+          severity: { type: Type.STRING },
+          description: { type: Type.STRING },
+          recommendation: { type: Type.STRING }
         },
-        required: ["divergenceRisk", "reasoning", "recommendedAction"]
+        required: ["vulnerability", "severity", "description", "recommendation"]
       }
     }
   });
-  return response.text ? JSON.parse(response.text) : null;
+
+  return JSON.parse(response.text);
 };
 
-export const generateHealthSummary = async (metrics: any, health: any) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const getSecurityNews = async () => {
   const response = await ai.models.generateContent({
-    model: 'gemini-flash-lite-latest',
-    contents: `Summarize this Quantum System health state: ${JSON.stringify(health)} with metrics: ${JSON.stringify(metrics)}. Provide a 2-sentence technical diagnostic. Use techno-babble but keep it meaningful.`,
+    model: 'gemini-3-flash-preview',
+    contents: "Provide the 3 most recent and impactful cybersecurity news snippets. For each, assign a severity level based on global impact: CRITICAL for active major breaches, HIGH for new severe vulnerabilities, and INFO for general research/updates.",
     config: {
-      temperature: 0.7,
-    },
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            id: { type: Type.STRING },
+            title: { type: Type.STRING },
+            summary: { type: Type.STRING },
+            date: { type: Type.STRING },
+            tag: { type: Type.STRING },
+            severity: { type: Type.STRING, description: 'One of: CRITICAL, HIGH, INFO' }
+          },
+          required: ["id", "title", "summary", "date", "tag", "severity"]
+        }
+      }
+    }
   });
-  return response.text;
+
+  return JSON.parse(response.text);
+};
+
+export const analyzeVaultEntry = async (label: string, identifier: string) => {
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: `Analyze the security profile of this account record for a vault. Label: "${label}", Identifier: "${identifier}". Evaluate the risk level and provide a brief security audit.`,
+    config: {
+      temperature: 0.2,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          securityScore: { type: Type.INTEGER, description: 'Score from 0 to 100' },
+          analysis: { type: Type.STRING, description: 'Short technical summary of risks or strengths' }
+        },
+        required: ["securityScore", "analysis"]
+      }
+    }
+  });
+  return JSON.parse(response.text);
 };
