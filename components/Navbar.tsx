@@ -1,15 +1,16 @@
 import React from 'react';
-import { Shield, ShoppingBag, Radio, Cpu, BookOpen, Database } from 'lucide-react';
+import { Shield, ShoppingBag, Radio, Cpu, BookOpen, Database, Atom } from 'lucide-react';
 
 interface NavbarProps {
-  activeTab: 'HOME' | 'STORE' | 'SCAN' | 'NEWS' | 'RESOURCES' | 'VAULT';
-  setActiveTab: (tab: 'HOME' | 'STORE' | 'SCAN' | 'NEWS' | 'RESOURCES' | 'VAULT') => void;
+  activeTab: 'HOME' | 'STORE' | 'SCAN' | 'NEWS' | 'RESOURCES' | 'VAULT' | 'QUANTUM';
+  setActiveTab: (tab: 'HOME' | 'STORE' | 'SCAN' | 'NEWS' | 'RESOURCES' | 'VAULT' | 'QUANTUM') => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
   const navItems = [
     { id: 'HOME', label: 'Network', icon: <Cpu className="w-4 h-4" /> },
     { id: 'VAULT', label: 'Fiber Vault', icon: <Database className="w-4 h-4" /> },
+    { id: 'QUANTUM', label: 'Quantum Lab', icon: <Atom className="w-4 h-4" /> },
     { id: 'STORE', label: 'REX Store', icon: <ShoppingBag className="w-4 h-4" /> },
     { id: 'SCAN', label: 'Security Test', icon: <Shield className="w-4 h-4" /> },
     { id: 'NEWS', label: 'Intelligence', icon: <Radio className="w-4 h-4" /> },

@@ -1,39 +1,48 @@
-export interface QubitState {
-  id: number;
-  alpha: number; // probability of |0>
-  beta: number;  // probability of |1>
-  phase: number; // phase in radians
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: 'FREE' | 'PREMIUM';
+  image: string;
 }
 
-export interface TemporalLog {
+export interface SecurityScanResult {
+  vulnerability: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  description: string;
+  recommendation: string;
+}
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  date: string;
+  tag: string;
+  severity: 'CRITICAL' | 'HIGH' | 'INFO';
+}
+
+export interface SavedScan {
   id: string;
   timestamp: string;
-  destinationDate: string;
-  narrative: string;
-  stability: number;
+  input: string;
+  result: SecurityScanResult;
 }
 
-export interface QuantumMetrics {
-  entanglementLevel: number;
-  coherenceTime: number;
-  gateOps: number;
-  noiseLevel: number;
+export interface VaultEntry {
+  id: string;
+  label: string;
+  identifier: string;
+  category: string;
+  securityScore: number;
+  analysis: string;
+  createdAt: string;
 }
 
-export type HealthStatus = 'OPTIMAL' | 'WARNING' | 'CRITICAL';
-
-export interface SystemHealth {
-  quantumCore: HealthStatus;
-  temporalStabilizer: HealthStatus;
-  dataLink: HealthStatus;
-}
-
-export enum ControlView {
-  DASHBOARD = 'DASHBOARD',
-  TEMPORAL_LEAP = 'TEMPORAL_LEAP',
-  QUBIT_LAB = 'QUBIT_LAB',
-  STEERING = 'STEERING',
-  VOICE_COMMAND = 'VOICE_COMMAND',
-  GOVERNANCE = 'GOVERNANCE',
-  PROPERTIES = 'PROPERTIES'
+export interface QubitState {
+  id: number;
+  alpha: number;
+  beta: number;
+  phase: number;
 }
